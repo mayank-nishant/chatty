@@ -21,5 +21,8 @@
   "bugs": {
     "url": "https://github.com/mayank-nishant/chatty/issues"
   },
-  "homepage": "https://github.com/mayank-nishant/chatty#readme"
+  "homepage": "https://github.com/mayank-nishant/chatty#readme",
+  "dependencies": {
+    "mongodb": "^7.2.0"
+  }
 }
