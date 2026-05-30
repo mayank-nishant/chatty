@@ -94,3 +94,68 @@ export const signup = async (req, res) => {
     return res.status(500).json({ success: false, message: "Internal server error." });
   }
 };
+
+export const login = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (typeof email !== "string" || typeof password !== "string") {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid input types.",
+      });
+    }
+
+    const sanitizedEmail = email.trim().toLowerCase();
+
+    if (!sanitizedEmail || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "Email and password are required.",
+      });
+    }
+
+    const user = await User.findOne({ email: sanitizedEmail }).select("+password");
+
+    const isPasswordCorrect = user ? await bcrypt.compare(password, user.password) : false;
+
+    if (!user || !isPasswordCorrect) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid credentials.",
+      });
+    }
+
+    generateToken(user._id, res);
+
+    return res.status(200).json({
+      success: true,
+      message: "Logged in successfully.",
+      user: {
+        _id: user._id,
+        fullName: user.fullName,
+        email: user.email,
+        profilePic: user.profilePic,
+      },
+    });
+  } catch (error) {
+    console.error("Error in login controller:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error.",
+    });
+  }
+};
+
+export const logout = (_req, res) => {
+  res.clearCookie("jwt", {
+    httpOnly: true,
+    sameSite: "strict",
+    secure: process.env.NODE_ENV === "production",
+  });
+
+  return res.status(200).json({
+    success: true,
+    message: "Logged out successfully.",
+  });
+};
