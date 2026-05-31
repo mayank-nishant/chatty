@@ -4,6 +4,7 @@ import mongoose from "mongoose";
 import User from "../models/User.js";
 import { generateToken } from "../lib/utils.js";
 import { sendWelcomeEmail } from "../emails/emailHandlers.js";
+import cloudinary from "../lib/cloudinary.js";
 
 const PASSWORD_MIN_LENGTH = 6;
 const PASSWORD_MAX_LENGTH = 100;
@@ -158,4 +159,53 @@ export const logout = (_req, res) => {
     success: true,
     message: "Logged out successfully.",
   });
+};
+
+const extractPublicId = (url) => {
+  try {
+    const { pathname } = new URL(url);
+    return pathname.replace(/^\/[^/]+\/image\/upload\/(?:v\d+\/)?/, "").replace(/\.[^.]+$/, "");
+  } catch {
+    return null;
+  }
+};
+
+export const updateProfile = async (req, res) => {
+  try {
+    const { profilePic } = req.body;
+
+    if (typeof profilePic !== "string" || !profilePic.trim()) {
+      return res.status(400).json({
+        success: false,
+        message: "A valid profile picture is required.",
+      });
+    }
+
+    const oldProfilePic = req.user.profilePic;
+
+    if (oldProfilePic) {
+      const publicId = extractPublicId(oldProfilePic);
+      if (publicId) {
+        await cloudinary.uploader.destroy(publicId).catch((err) => console.error("Failed to delete old profile picture:", err));
+      }
+    }
+
+    const uploadResponse = await cloudinary.uploader.upload(profilePic.trim(), {
+      folder: "chatty/profile-pictures",
+    });
+
+    const updatedUser = await User.findByIdAndUpdate(req.user._id, { profilePic: uploadResponse.secure_url }, { new: true, runValidators: true });
+
+    return res.status(200).json({
+      success: true,
+      message: "Profile picture updated successfully.",
+      user: updatedUser,
+    });
+  } catch (error) {
+    console.error("Error in updateProfile controller:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error.",
+    });
+  }
 };
