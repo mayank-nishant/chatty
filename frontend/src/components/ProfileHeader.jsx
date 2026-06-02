@@ -1,5 +1,6 @@
 import { useState, useRef } from "react";
 import { LogOutIcon, VolumeOffIcon, Volume2Icon, CameraIcon, Loader2 } from "lucide-react";
+import toast from "react-hot-toast";
 
 import { useAuthStore } from "../store/useAuthStore.js";
 import { useChatStore } from "../store/useChatStore.js";
@@ -14,19 +15,23 @@ function ProfileHeader() {
   const [selectedImg, setSelectedImg] = useState(null);
   const fileInputRef = useRef(null);
 
+  const resetFileInput = () => {
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
   const handleImageUpload = async (e) => {
     const file = e.target.files?.[0];
-
-    if (fileInputRef.current) fileInputRef.current.value = "";
+    resetFileInput();
 
     if (!file) return;
 
     if (!file.type.startsWith("image/")) {
+      toast.error("Please select a valid image.");
       return;
     }
 
     if (file.size > FILE_SIZE_LIMIT) {
-      console.error("File too large. Maximum size is 5MB.");
+      toast.error("Image size must be less than 5MB.");
       return;
     }
 
@@ -38,13 +43,15 @@ function ProfileHeader() {
 
       try {
         await updateProfile({ profilePic: base64Image });
+        setSelectedImg(null);
       } catch {
         setSelectedImg(null);
       }
     };
 
     reader.onerror = () => {
-      console.error("Failed to read file.");
+      toast.error("Failed to read image. Please try again.");
+      console.error("FileReader error.");
     };
 
     reader.readAsDataURL(file);
@@ -59,7 +66,6 @@ function ProfileHeader() {
   return (
     <div className="px-5 py-4 border-b border-slate-700/40 bg-slate-900/20 backdrop-blur-xl sticky top-0 z-20">
       <div className="flex items-center justify-between gap-4">
-        {/* User info */}
         <div className="flex items-center gap-4 min-w-0">
           <div className="relative shrink-0">
             <button onClick={() => fileInputRef.current?.click()} className="relative size-14 rounded-2xl overflow-hidden ring-2 ring-slate-700/50 hover:ring-cyan-400/50 transition-all duration-300 group" aria-label="Change profile picture">
@@ -81,7 +87,6 @@ function ProfileHeader() {
           </div>
         </div>
 
-        {/* Actions */}
         <div className="flex items-center gap-2">
           <button onClick={handleToggleSound} className="size-10 rounded-xl flex items-center justify-center text-slate-400 hover:text-cyan-400 hover:bg-slate-800/70 transition-all duration-200" aria-label={isSoundEnabled ? "Mute sounds" : "Unmute sounds"}>
             {isSoundEnabled ? <Volume2Icon className="size-5" /> : <VolumeOffIcon className="size-5" />}

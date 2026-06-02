@@ -2,7 +2,7 @@ import { create } from "zustand";
 import toast from "react-hot-toast";
 import { io } from "socket.io-client";
 
-import { axiosInstance } from "../lib/axios";
+import { axiosInstance } from "../lib/axios.js";
 
 const BASE_URL = import.meta.env.MODE === "development" ? "http://localhost:3000" : window.location.origin;
 
