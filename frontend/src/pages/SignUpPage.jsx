@@ -2,7 +2,7 @@ import { useState } from "react";
 
 import { Link } from "react-router-dom";
 
-import { MessageCircleIcon, LockIcon, MailIcon, UserIcon, LoaderIcon } from "lucide-react";
+import { LockIcon, MailIcon, UserIcon, LoaderIcon } from "lucide-react";
 
 import toast from "react-hot-toast";
 
@@ -96,15 +96,27 @@ function SignUpPage() {
               <div className="w-full max-w-md">
                 {/* HEADER */}
                 <div className="text-center mb-8">
-                  <MessageCircleIcon
+                  <img
+                    src="/favicon.svg"
+                    alt="Chatty logo"
                     className="
                       size-12
                       mx-auto
-                      mb-4
-                      
-                      text-cyan-400
+                      mb-3
                     "
                   />
+
+                  <h1
+                    className="
+                      text-2xl
+                      font-bold
+                      tracking-tight
+
+                      text-slate-100
+                    "
+                  >
+                    Chatty
+                  </h1>
 
                   <h2
                     className="

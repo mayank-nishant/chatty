@@ -2,7 +2,7 @@ import { useState } from "react";
 
 import { Link } from "react-router-dom";
 
-import { MessageCircleIcon, MailIcon, LoaderIcon, LockIcon, Eye, EyeOff } from "lucide-react";
+import { MailIcon, LoaderIcon, LockIcon, Eye, EyeOff } from "lucide-react";
 
 import toast from "react-hot-toast";
 
@@ -93,11 +93,11 @@ function LoginPage() {
                 {/* HEADER */}
                 <div className="text-center mb-8">
                   <div className="relative inline-flex">
-                    <MessageCircleIcon
+                    <img
+                      src="/favicon.svg"
+                      alt="Chatty logo"
                       className="
                         size-12
-                        
-                        text-cyan-400
                       "
                     />
 
@@ -105,23 +105,38 @@ function LoginPage() {
                     <div
                       className="
                         absolute inset-0
-                        
+                        -z-10
+
                         rounded-full
-                        
+
                         bg-cyan-400/20
-                        
+
                         blur-2xl
                       "
                     />
                   </div>
 
+                  <h1
+                    className="
+                      mt-3
+
+                      text-2xl
+                      font-bold
+                      tracking-tight
+
+                      text-slate-100
+                    "
+                  >
+                    Chatty
+                  </h1>
+
                   <h2
                     className="
                       mt-4
-                      
+
                       text-3xl
                       font-bold
-                      
+
                       text-slate-100
                     "
                   >
